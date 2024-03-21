@@ -18,31 +18,26 @@ void EXTI9_5_IRQHandler(void)
         EXTI->PR=1<<5;  //清除LINE5上的中断标志位
         Encoder_Left=-Read_Encoder(2); //读取编码器的值，保证输出极性一致
         Encoder_Right=Read_Encoder(3); //读取编码器的值
-//        if(White_balance_Flog==1){TCS3200_Color_Recognition();}//颜色识别
-//        else{TCS3200_White_balance();}//白平衡
+        
+        TCS3200_Color_Recognition();//颜色识别加白平衡
         
         Path_Planning();
         
-        //Tracking_3(1);
-        //Tracking1(1);
-        //Tracking_Forward();
-        //Tracking_Back();
-        //Yuandi_Left();
         
         Motor_Left=PID_Calc_Motor_Left(&PID1_Structure,Encoder_Left,Target_Speed_L); //===计算左轮电机最终PWM
         Motor_Right=PID_Calc_Motor_Right(&PID2_Structure,Encoder_Right,Target_Speed_R); //===计算右轮电机最终PWM             
-        Set_Pwm(Motor_Left,Motor_Right);       //===赋值给PWM寄存器
+        Set_Pwm(Motor_Left,Motor_Right); //===赋值给PWM寄存器
     }
 }
 
-//void EXTI0_IRQHandler(void)
-//{
-//    if(EXTI_GetITStatus(EXTI_Line0)!=RESET)
-//    {
-//        EXTI_ClearITPendingBit(EXTI_Line0);//清除LINE0上的中断标志位
-//        Color_Num++;
-//    }
-//}
+void EXTI0_IRQHandler(void)
+{
+    if(EXTI_GetITStatus(EXTI_Line0)!=RESET)
+    {
+        EXTI_ClearITPendingBit(EXTI_Line0);//清除LINE0上的中断标志位
+        Color_Num++;
+    }
+}
 
 void Path_Planning()
 {
@@ -70,13 +65,14 @@ void Path_Planning()
             {
                 Tracking_3(1);
             }
-            else if(DanWu_flog==1)//抓物块
+            else if(DanWu_flog==1)//第一次抓物块 开启颜色识别
             {
-                Num=1;Miflog=0;DanWu_flog=0;Zhuan_End=0;
+                Num=1;Miflog=0;DanWu_flog=0;Zhuan_End=0;TCs3200_ON_Flog=1;
+                DUOJI_ON_Flog=1;DUOJI_Flog=0;duoji_Flog=1; 
             }
         }
     }
-    else if(Num==1)
+    else if(Num==1&&DUOJI_OFF_Flog==1&&DUOJI_ON_Flog==0)
     {
         if(Miflog==0)//未到米字
         {
@@ -94,34 +90,90 @@ void Path_Planning()
                 {
                     Tracking_3(1);
                 }
-                else if(DanWu_flog==1)//抓物块
+                else if(DanWu_flog==1)//第二次抓物块
                 {
                     Num=2;Miflog=0;DanWu_flog=0;Zhuan_End=0;
+                    DUOJI_ON_Flog=1;DUOJI_Flog=1;duoji_Flog=2;
                 }
             }
         }
     }
-    else if(Num==2)
+    else if(Num==2&&DUOJI_OFF_Flog==1&&DUOJI_ON_Flog==0)
     {
-        if(DanWu_flog==0)//未到单个物块地点
+        if(Miflog==0)//未到米字
         {
-            Tracking_4(1);
+            Tracking_1(0);
         }
-        if(DanWu_flog<0)
+        else if(Miflog==1)//到米字
         {
-            Tracking_4(1);
-        }
-        else if(DanWu_flog==0)//走出存放物块地点 去放物块
-        {
-            Tracking_3(1);
-        }
-        else if(DanWu_flog==1)//放物块
-        {
-            Target_Speed_L = 0;Target_Speed_R = 0;
-            Num=3;Miflog=0;DanWu_flog=0;Zhuan_End=0;
+            if(Zhuan_End==0)
+            {
+                Yuandi_Zhuan(180);
+            }
+            else if(Zhuan_End==1)//旋转结束
+            {
+                if(DanWu_flog==0)//未到单个物块地点
+                {
+                    Tracking_3(1);
+                }
+                else if(DanWu_flog==1)//第三次抓物块
+                {
+                    Num=3;Miflog=0;DanWu_flog=0;Zhuan_End=0;
+                    DUOJI_ON_Flog=1;DUOJI_Flog=2;duoji_Flog=3;
+                }
+            }
         }
     }
+    else if(Num==3&&DUOJI_OFF_Flog==1&&DUOJI_ON_Flog==0)
+    {
+    if(Miflog==0)//未到米字
+        {
+            Tracking_1(0);
+        }
+        else if(Miflog==1)//到米字
+        {
+            if(Zhuan_End==0)
+            {
+                Yuandi_Zhuan(90);
+            }
+            else if(Zhuan_End==1)//旋转结束
+            {
+                Num=4;Miflog=0;DanWu_flog=0;Zhuan_End=0;
+            }
+        }
+    }
+    
+    
+//    else if(Num==2)
+//    {
+//        if(DanWu_flog==0)//未到单个物块地点
+//        {
+//            Tracking_4(1);
+//        }
+//        if(DanWu_flog<0)
+//        {
+//            Tracking_4(1);
+//            if(DanWu_flog==0)
+//            {
+//                Num=3;Miflog=0;DanWu_flog=0;Zhuan_End=0;
+//            }
+//        }
+//    }
+//    else if(Num==3)
+//    {
+//        if(DanWu_flog==0)//走出存放物块地点 去放物块
+//        {
+//            Tracking_3(1);
+//        }
+//        else if(DanWu_flog==1)//放物块
+//        {
+//            Target_Speed_L = 0;Target_Speed_R = 0;
+//            
+//        }
+//    }
 }
+
+
 
 
 void PID_Init(void)
