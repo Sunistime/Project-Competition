@@ -58,8 +58,10 @@
 
 
 void TCS3200_Init(void);
-void TCS3200_Path_Planning(void);//路径规划 得到各个分路的值
+void TCS3200_Determine(void);//判断颜色
+void TCS3200_Planning(void);//路径规划
 void TCS3200_Color_Recognition(void);//颜色识别
+void TCS3200_Color_Re(void);//颜色识别底层
 void TCS3200_White_balance(void);//1完成 0异常
 void TCS3200_Mode(u8 TCS3200_Mode);
 void TCS3200_Mode_Color(u8 TCS3200_Color_Mode);

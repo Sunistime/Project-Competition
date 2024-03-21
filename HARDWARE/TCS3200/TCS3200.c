@@ -20,8 +20,81 @@ void TCS3200_Init(void)
     TCS3200_EXTI_Init();
 }
 
+void TCS3200_Planning()//路径规划
+{
+    static int TCS3200_Num;
+    
+    if(TCS3200_Num==1)//第一次
+    {
+        switch(TCS3200_Pa_Pl_Flog)
+        {
+            case 1:Planning[0]=1;TCS3200_Num=2;break;
+            case 2:Planning[0]=2;TCS3200_Num=2;break;
+            case 3:Planning[0]=3;TCS3200_Num=2;break;
+            case 4:Planning[0]=4;TCS3200_Num=2;break;
+            case 5:Planning[0]=5;TCS3200_Num=2;break;
+            case 0:TCS3200_Pa_Pl_Flog=0;TCS3200_Num=1;break;
+            default:TCS3200_Pa_Pl_Flog=0;TCS3200_Num=1;
+        }
+    }
+    else if(TCS3200_Num==2)//第二次
+    {
+        switch(TCS3200_Pa_Pl_Flog)
+        {
+            case 1:Planning[1]=1;TCS3200_Num=3;break;
+            case 2:Planning[1]=2;TCS3200_Num=3;break;
+            case 3:Planning[1]=3;TCS3200_Num=3;break;
+            case 4:Planning[1]=4;TCS3200_Num=3;break;
+            case 5:Planning[1]=5;TCS3200_Num=3;break;
+            case 0:TCS3200_Pa_Pl_Flog=0;TCS3200_Num=2;break;
+            default:TCS3200_Pa_Pl_Flog=0;TCS3200_Num=2;
+        }
+    }
+    else if(TCS3200_Num==3)//第三次
+    {
+        switch(TCS3200_Pa_Pl_Flog)
+        {
+            case 1:Planning[2]=1;TCS3200_Num=4;break;
+            case 2:Planning[2]=2;TCS3200_Num=4;break;
+            case 3:Planning[2]=3;TCS3200_Num=4;break;
+            case 4:Planning[2]=4;TCS3200_Num=4;break;
+            case 5:Planning[2]=5;TCS3200_Num=4;break;
+            case 0:TCS3200_Pa_Pl_Flog=0;TCS3200_Num=3;break;
+            default:TCS3200_Pa_Pl_Flog=0;TCS3200_Num=3;
+        }
+    }
+    else if(TCS3200_Num==4)//第四次
+    {
+        switch(TCS3200_Pa_Pl_Flog)
+        {
+            case 1:Planning[3]=1;TCS3200_Num=5;break;
+            case 2:Planning[3]=2;TCS3200_Num=5;break;
+            case 3:Planning[3]=3;TCS3200_Num=5;break;
+            case 4:Planning[3]=4;TCS3200_Num=5;break;
+            case 5:Planning[3]=5;TCS3200_Num=5;break;
+            case 0:TCS3200_Pa_Pl_Flog=0;TCS3200_Num=4;break;
+            default:TCS3200_Pa_Pl_Flog=0;TCS3200_Num=4;
+        }
+    }
+    else if(TCS3200_Num==5)//第五次
+    {
+        switch(TCS3200_Pa_Pl_Flog)
+        {
+            case 1:Planning[4]=1;TCS3200_Num=5;break;
+            case 2:Planning[4]=2;TCS3200_Num=5;break;
+            case 3:Planning[4]=3;TCS3200_Num=5;break;
+            case 4:Planning[4]=4;TCS3200_Num=5;break;
+            case 5:Planning[4]=5;TCS3200_Num=5;break;
+            case 0:TCS3200_Pa_Pl_Flog=0;TCS3200_Num=5;break;
+            default:TCS3200_Pa_Pl_Flog=0;TCS3200_Num=5;
+        }
+    }
+}
+
+
+
 /*0无 1白 2黑 3红 4绿 5蓝*/
-void TCS3200_Path_Planning()//路径规划 得到各个分路的值
+void TCS3200_Determine()//判断颜色
 {
     if(Color_RGB[0]>=235&&Color_RGB[0]<=255&&Color_RGB[1]>=235&&Color_RGB[1]<=255&&Color_RGB[2]>=235&&Color_RGB[2]<=255)//白
     {
@@ -50,6 +123,22 @@ void TCS3200_Path_Planning()//路径规划 得到各个分路的值
 }
 
 void TCS3200_Color_Recognition(void)//颜色识别
+{
+    if(White_balance_Flog==1)//白平衡结束
+    {
+        if(TCs3200_ON_Flog==1)//开启颜色识别
+        {
+            TCS3200_Color_Recognition();//颜色识别
+        }
+    }
+    else
+    {
+        TCS3200_White_balance();//白平衡
+    }
+}
+
+
+void TCS3200_Color_Re(void)//颜色识别底层
 {
     switch(Color_Flog)
     {
