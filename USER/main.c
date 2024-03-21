@@ -9,10 +9,12 @@ short Trackflog;//循迹标志位
 short Zhuan_End;//旋转结束标志位 1结束 0未结束
 short Miflog,DanWu_flog;//固定点位标志位 0未到达 1到达
 short Color_Flog,White_balance_Flog;//颜色识别标志位 白平衡标志位
-short TCS3200_Pa_Pl_Flog;
+short TCs3200_ON_Flog,TCS3200_Pa_Pl_Flog;//颜色识别开启标准位,识别到对应颜色标志位
+short DUOJI_ON_Flog,DUOJI_OFF_Flog,DUOJI_Flog,duoji_Flog;//舵机开始标志位,舵机结束标志位,五爪大舵机标志位,五爪小舵机标志位
 int Color_Num;
 int Color_RGB[3]={0,0,0};
 int RGB[3]={0,0,0};
+int Planning[5];
 float R_Divisor,G_Divisor,B_Divisor;//颜色因子
 
 int main(void)
@@ -33,10 +35,12 @@ int main(void)
     //TCS3200_Init();
     //OLED_Init();
     //uart2_Init(9600);
-    
+    //DuoJi_Init();
     while(1)
     {
         //SHOW();
+        
+        DuoJi_Control(DUOJI_Flog,duoji_Flog);
         
     }
 }
