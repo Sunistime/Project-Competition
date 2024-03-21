@@ -106,10 +106,12 @@ extern short Zhuan_End;//旋转结束标志位 1结束 0未结束
 extern short Miflog,DanWu_flog;//固定点位标志位 0未到达 1到达
 extern int Color_Num;
 extern short Color_Flog,White_balance_Flog;//颜色识别标志位 白平衡标志位
-extern short TCS3200_Pa_Pl_Flog;
+extern short TCs3200_ON_Flog,TCS3200_Pa_Pl_Flog;//颜色识别开启标准位,识别到对应颜色标志位
+extern short DUOJI_ON_Flog,DUOJI_OFF_Flog,DUOJI_Flog,duoji_Flog;//舵机开始标志位,舵机结束标志位,五爪大舵机标志位,五爪小舵机标志位
 extern const float PID[];  //赋予PID三参数数值
 extern int Color_RGB[];
 extern int RGB[];
+extern int Planning[];
 extern float R_Divisor,G_Divisor,B_Divisor;//颜色因子
 
 void NVIC_Configuration(void);//中断优先级设置
